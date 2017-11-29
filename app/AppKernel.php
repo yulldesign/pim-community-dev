@@ -12,6 +12,40 @@ use Symfony\Component\HttpKernel\Kernel;
  */
 class AppKernel extends Kernel
 {
+    protected $tenant;
+
+
+    /**
+     * @inheritdoc
+     */
+    public function __construct($environment, $debug)
+    {
+        parent::__construct($environment, $debug);
+        if ($hostEnv = $this->getHostEnv()) {
+            $_SERVER['SYMFONY__HOST'] = $hostEnv;
+        }
+    }
+    private function getHostEnv()
+    {
+        if (!empty($_SERVER['HTTP_HOST'])) {
+            return $_SERVER['HTTP_HOST'];
+        }
+
+        return null;
+    }
+
+    public function getTenant() : string
+    {
+        if ( !empty($this->tenant) ) {
+            return $this->tenant;
+        }
+        $httpHostString = $this->getHostEnv();
+        $httpHostExploded = explode('.', $httpHostString);
+        return $httpHostExploded[0];
+        // this get de subdomain. If the access is tenant1.myapp.com this returns tenant1.
+
+    }
+
     /**
      * Registers your custom bundles
      *
@@ -57,11 +91,14 @@ class AppKernel extends Kernel
      */
     public function registerContainerConfiguration(LoaderInterface $loader)
     {
+        /*
         $loader->load($this->getRootDir() . '/config/config_' . $this->getEnvironment() . '.yml');
 
         if (is_file($file = $this->getRootDir() . '/config/config_' . $this->getEnvironment() . '_local.yml')) {
             $loader->load($file);
         }
+        */
+        $loader->load($this->getRootDir().'/config/'.$this->getTenant().'/config_'.$this->getEnvironment().'.yml');
     }
 
     /**
@@ -192,6 +229,8 @@ class AppKernel extends Kernel
             . DIRECTORY_SEPARATOR
             . 'var'
             . DIRECTORY_SEPARATOR
+            . $this->getTenant()
+            . DIRECTORY_SEPARATOR
             . 'cache'
             . DIRECTORY_SEPARATOR
             . $this->getEnvironment();
@@ -202,6 +241,13 @@ class AppKernel extends Kernel
      */
     public function getLogDir(): string
     {
-        return dirname(__DIR__) . DIRECTORY_SEPARATOR . 'var' . DIRECTORY_SEPARATOR . 'logs';
+        return dirname(__DIR__) . DIRECTORY_SEPARATOR . 'var' . DIRECTORY_SEPARATOR . $this->getTenant()
+        . DIRECTORY_SEPARATOR. 'logs';
+    }
+
+    public function setTenant(string $tenant) : AppKernel
+    {
+        $this->tenant = $tenant;
+        return $this;
     }
 }

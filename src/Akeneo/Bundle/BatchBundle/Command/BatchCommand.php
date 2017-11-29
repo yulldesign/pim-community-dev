@@ -72,7 +72,14 @@ class BatchCommand extends ContainerAwareCommand
                 null,
                 InputOption::VALUE_NONE,
                 'Don\'t display logs'
-            );
+            )
+            ->addOption(
+                'tenant',
+                null,
+                InputOption::VALUE_REQUIRED,
+                'Supplier Tenant name'
+            )
+        ;
     }
 
     /**

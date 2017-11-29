@@ -18,6 +18,8 @@ $loader = require __DIR__.'/../app/autoload.php';
 
 $input = new ArgvInput();
 $env = $input->getParameterOption(['--env', '-e'], getenv('SYMFONY_ENV') ?: 'dev');
+$tenant = $input->getParameterOption(['--tenant', '-t'], getenv('AOB_TENANT') ?: '');
+
 $behat = strpos($env, 'behat');
 $debug = getenv('SYMFONY_DEBUG') !== '0' && !$input->hasParameterOption(['--no-debug', '']) && $env !== 'prod' && false === $behat;
 
@@ -25,6 +27,6 @@ if ($debug) {
     Debug::enable();
 }
 
-$kernel = new AppKernel($env, $debug);
+$kernel = (new AppKernel($env, $debug))->setTenant($tenant);
 $application = new Application($kernel);
 $application->run($input);

@@ -33,7 +33,8 @@ class InstallCommand extends ContainerAwareCommand
             ->setDescription(sprintf('%s Application Installer.', static::APP_NAME))
             ->addOption('force', null, InputOption::VALUE_NONE, 'Force installation')
             ->addOption('symlink', null, InputOption::VALUE_NONE, 'Install assets as symlinks')
-            ->addOption('clean', null, InputOption::VALUE_NONE, 'Clean previous install');
+            ->addOption('clean', null, InputOption::VALUE_NONE, 'Clean previous install')
+            ->addOption('tenant', null, InputOption::VALUE_REQUIRED, 'Tenant name');
     }
 
     /**

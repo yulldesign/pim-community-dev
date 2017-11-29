@@ -6,21 +6,16 @@ namespace Akeneo\Bundle\BatchQueueBundle\Command;
 
 use Akeneo\Bundle\BatchQueueBundle\Manager\JobExecutionManager;
 use Akeneo\Bundle\BatchQueueBundle\Queue\JobExecutionMessageRepository;
-use Akeneo\Component\Batch\Job\ExitStatus;
 use Akeneo\Component\BatchQueue\Queue\JobExecutionMessage;
 use Akeneo\Component\BatchQueue\Queue\JobExecutionQueueInterface;
-use Doctrine\DBAL\Connection;
-use Ramsey\Uuid\Provider\NodeProviderInterface;
 use Ramsey\Uuid\Uuid;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\ConsoleOutputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Process\PhpExecutableFinder;
 use Symfony\Component\Process\Process;
-use Symfony\Component\Process\ProcessBuilder;
 
 /**
  * This command is a daemon to consume job execution messages and launch the associated job execution in background.
@@ -47,8 +42,11 @@ class JobQueueConsumerCommand extends ContainerAwareCommand
     {
         $this
             ->setName(self::COMMAND_NAME)
-            ->setDescription('Launch a daemon that will consume job execution messages and launch the associated job execution in backgrounds')
-            ->addOption('run-once', null, InputOption::VALUE_NONE, 'Launch only one job execution and stop the daemon once the job execution is finished');
+            ->setDescription(
+                'Launch a daemon that will consume job execution messages and launch the associated job execution in backgrounds')
+            ->addOption(
+                'run-once', null, InputOption::VALUE_NONE, 'Launch only one job execution and stop the daemon once the job execution is finished')
+            ->addOption('tenant', null, InputOption::VALUE_REQUIRED, 'Akeneo Onboarder Tenant to be processed');
     }
 
     /**
@@ -62,13 +60,23 @@ class JobQueueConsumerCommand extends ContainerAwareCommand
         $output->writeln(sprintf('Consumer name: "%s"', $consumerName->toString()));
 
         $pathFinder = new PhpExecutableFinder();
-        $console = sprintf('%s%sbin%sconsole', $this->getContainer()->getParameter('kernel.project_dir'), DIRECTORY_SEPARATOR, DIRECTORY_SEPARATOR);
+        $console = sprintf(
+            '%s%sbin%sconsole',
+            $this->getContainer()->getParameter('kernel.project_dir'),
+            DIRECTORY_SEPARATOR, DIRECTORY_SEPARATOR );
 
         do {
             try {
                 $jobExecutionMessage = $this->getQueue()->consume($consumerName->toString());
 
-                $arguments = array_merge([$pathFinder->find(), $console, 'akeneo:batch:job' ], $this->getArguments($jobExecutionMessage));
+                $arguments = array_merge(
+                    [$pathFinder->find(), $console, 'akeneo:batch:job' ],
+                    $this->getArguments($jobExecutionMessage));
+
+                if ( !empty ($tenant= $input->getOptions()['tenant']) ) {
+                    $arguments[] = sprintf('--tenant=%s', $tenant );
+                }
+
                 $process = new Process($arguments);
                 $process->setTimeout(null);
 
@@ -120,6 +128,7 @@ class JobQueueConsumerCommand extends ContainerAwareCommand
         ];
 
         foreach ($jobExecutionMessage->getOptions() as $optionsName => $optionValue) {
+
             if (true === $optionValue) {
                 $arguments[] = sprintf('--%s', $optionValue);
             }
