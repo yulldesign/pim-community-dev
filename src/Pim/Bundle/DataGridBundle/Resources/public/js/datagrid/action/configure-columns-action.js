@@ -135,11 +135,6 @@ define(
                     dataLocale: this.locale
                 });
 
-                var loadingMask = new LoadingMask();
-                loadingMask.render().$el.appendTo($('#container'));
-                loadingMask.show();
-
-
                 $.get(url, _.bind(function (columns) {
                     var displayedCodes = DatagridState.get(this.gridName, 'columns');
 
@@ -167,10 +162,8 @@ define(
                         columnList.add(column);
                     });
 
-                    var columnListView = new ColumnListView({collection: columnList});
-
-                    var modal = new Backbone.BootstrapModal({
-                        className: 'modal modal--fullPage modal--topButton column-configurator-modal',
+                    const modal = new Backbone.BootstrapModal({
+                        className: 'modal modal--fullPage modal--topButton column-configurator-modal move',
                         modalOptions: {
                             backdrop: 'static',
                             keyboard: false
@@ -180,24 +173,32 @@ define(
                         cancelText: __('pim_datagrid.column_configurator.cancel'),
                         title: __('pim_datagrid.column_configurator.title'),
                         content: this.configuratorTemplate(),
-                        okText: __('pim_datagrid.column_configurator.apply')
+                        okText: __('pim_datagrid.column_configurator.apply'),
+                        animate: true
                     });
 
-                    loadingMask.hide();
-                    loadingMask.$el.remove();
+                    $('.app')
+                        .addClass('app-scaleDown')
+                        .one('animationend webkitAnimationEnd oAnimationEnd MSAnimationEnd', () => {
+                            $('.app').removeClass('app-scaleDown');
+                        }
+                    );
+
+                    const columnListView = new ColumnListView({collection: columnList});
 
                     modal.open();
-                    columnListView.setElement('#column-configurator').render();
-
+                    modal.on('shown', () => {
+                        columnListView.setElement('#column-configurator').render();
+                    });
                     modal.on('cancel', this.subscribe.bind(this));
                     modal.on('ok', _.bind(function() {
-                        var values = columnListView.getDisplayed();
+                        const values = columnListView.getDisplayed();
                         if (!values.length) {
                             return;
                         } else {
                             DatagridState.set(this.gridName, 'columns', values.join(','));
                             modal.close();
-                            var url = window.location.hash;
+                            const url = window.location.hash;
                             Backbone.history.fragment = new Date().getTime();
                             Backbone.history.navigate(url, true);
                         }

@@ -139,6 +139,8 @@
   }
 }
 
+@animationDuration: 0.6s;
+
 .modal-backdrop {
   position: fixed;
   top: 0;
@@ -146,6 +148,72 @@
   bottom: 0;
   left: 0;
   z-index: 1040;
-  background-color: black ;
-  opacity: 0.8;
+  background-color: white;
+
+  &.fade {
+    opacity: 0;
+    transition: opacity 0.001s linear;
+
+    &.in {
+      opacity: 0.001;
+    }
+  }
+}
+
+.modal.modal--fullPage.move {
+  transform: translate3d(0, 0, 0);
+  opacity: 0;
+  transition: opacity 0.3s linear;
+  backface-visibility: hidden;
+
+  &.in {
+    -webkit-animation: moveFromBottom @animationDuration ease both;
+    animation: moveFromBottom @animationDuration ease both;
+    opacity: 1;
+  }
+}
+
+@keyframes moveFromBottom {
+  0% {
+    -webkit-transform: translateY(100%);
+    transform: translateY(100%);
+  }
+  100% {
+    -webkit-transform: translateY(0);
+    transform: translateY(0);
+  }
+}
+
+@-webkit-keyframes moveFromBottom {
+  0% {
+    -webkit-transform: translateY(100%);
+    transform: translateY(100%);
+  }
+  100% {
+    -webkit-transform: translateY(0);
+    transform: translateY(0);
+  }
+}
+
+@-webkit-keyframes scaleDown {
+  from { }
+  to {
+    opacity: 0;
+    -webkit-transform: scale(.8);
+  }
+}
+
+@keyframes scaleDown {
+  from { }
+  to {
+    opacity: 0;
+    -webkit-transform: scale(.8);
+    transform: scale(.8);
+  }
+}
+
+.app-scaleDown {
+  transform: translate3d(0, 0, 0);
+  -webkit-animation: scaleDown @animationDuration ease both;
+  animation: scaleDown @animationDuration ease both;
 }
