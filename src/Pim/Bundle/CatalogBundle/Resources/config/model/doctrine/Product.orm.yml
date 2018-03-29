@@ -1,2 +1,3 @@
 Pim\Component\Catalog\Model\Product:
     type: entity
+    discriminatorValue: product
