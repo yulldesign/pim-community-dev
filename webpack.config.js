@@ -212,6 +212,11 @@ module.exports = {
         // Inject live reload to auto refresh the page (hmr not compatible with our app)
         new LiveReloadPlugin({appendScriptTag: true, ignore: /node_modules/}),
 
+        // File space optimization
+        new webpack.DefinePlugin({
+          'process.env.NODE_ENV': isProd ? JSON.stringify('production') : JSON.stringify('development')
+        }),
+
         // Split the app into chunks for performance
         new webpack.optimize.CommonsChunkPlugin({
             name: 'lib',
