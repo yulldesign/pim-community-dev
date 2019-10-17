@@ -110,10 +110,12 @@ jobs:
                 command: docker-compose run --rm -T php bin/check-pullup
                 when: always
           - run:
+                name: Acceptance back (Apps)
+                command: docker-compose run --rm -T php vendor/bin/behat --strict -p acceptance -vv --config src/Akeneo/Apps/back/tests/Acceptance/behat.yml
+                when: always
+          - run:
                 name: Acceptance back
-                command: |
-                    docker-compose run --rm -T php vendor/bin/behat --strict -p acceptance -vv
-                    make apps-acceptance
+                command: docker-compose run --rm -T php vendor/bin/behat --strict -p acceptance -vv
                 when: always
           - store_test_results:
                 path: var/tests
