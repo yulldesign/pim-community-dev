@@ -37,3 +37,10 @@ services:
             - '@translator'
         tags:
             - { name: twig.extension }
+
+    pim_ui.twig.content_security_policy_extension:
+        class: Pim\Bundle\UIBundle\Twig\ContentSecurityPolicyExtension
+        arguments:
+            - '@security.script_nonce_generator'
+        tags:
+            - { name: twig.extension }

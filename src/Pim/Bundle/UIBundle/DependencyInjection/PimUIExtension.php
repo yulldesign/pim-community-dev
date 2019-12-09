@@ -26,6 +26,7 @@ class PimUIExtension extends Extension
         $config = $this->processConfiguration($configuration, $configs);
 
         $loader = new YamlFileLoader($container, new FileLocator(__DIR__ .'/../Resources/config'));
+        $loader->load('event_listeners.yml');
         $loader->load('controllers.yml');
         $loader->load('forms.yml');
         $loader->load('twig.yml');
