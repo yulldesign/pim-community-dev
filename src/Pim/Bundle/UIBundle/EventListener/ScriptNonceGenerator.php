@@ -1,6 +1,7 @@
 <?php
 
 namespace Pim\Bundle\UIBundle\EventListener;
+
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\HttpFoundation\RequestStack;
 
