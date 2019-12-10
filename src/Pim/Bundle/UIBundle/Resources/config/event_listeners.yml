@@ -2,12 +2,12 @@ services:
 #    To activate the content security policy, you must declare the following service
 #    in your own services.yml configuration
 #
-    security.event_listener.add_csp:
-        class: Pim\Bundle\UIBundle\EventListener\AddContentSecurityPolicyListener
-        arguments:
-            - '@security.script_nonce_generator'
-        tags:
-            - { name: kernel.event_subscriber }
+#    security.event_listener.add_csp:
+#        class: Pim\Bundle\UIBundle\EventListener\AddContentSecurityPolicyListener
+#        arguments:
+#            - '@security.script_nonce_generator'
+#        tags:
+#            - { name: kernel.event_subscriber }
 
     security.script_nonce_generator:
         class: Pim\Bundle\UIBundle\EventListener\ScriptNonceGenerator

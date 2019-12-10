@@ -29,3 +29,13 @@ oro_assetic:
 
 swiftmailer:
     disable_delivery: true
+
+services:
+    # This service is active only in dev and test environments.
+    # To activate it in prod environement, you must redeclare this service in your standard edition configuration
+    security.event_listener.add_csp:
+        class: Pim\Bundle\UIBundle\EventListener\AddContentSecurityPolicyListener
+        arguments:
+            - '@security.script_nonce_generator'
+        tags:
+            - { name: kernel.event_subscriber }
