@@ -1,4 +1,10 @@
 services:
+    security.script_nonce_generator:
+        class: Pim\Bundle\UIBundle\EventListener\ScriptNonceGenerator
+        arguments:
+            - '@request_stack'
+            - '%kernel.secret%'
+
 #    To activate the content security policy, you must declare the following service
 #    in your own services.yml configuration
 #
@@ -8,8 +14,3 @@ services:
 #            - '@security.script_nonce_generator'
 #        tags:
 #            - { name: kernel.event_subscriber }
-
-    security.script_nonce_generator:
-        class: Pim\Bundle\UIBundle\EventListener\ScriptNonceGenerator
-        arguments:
-            - '@request_stack'
